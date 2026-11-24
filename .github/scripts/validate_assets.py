@@ -45,4 +45,14 @@ for h in sorted(CARTES.glob("*.html")):
             fail(f"{h.name}: référence locale manquante: {ref}")
     print(f"HTML OK {h.name}")
 
+root_html = ROOT / "index.html"
+if root_html.exists():
+    text = root_html.read_text(encoding="utf-8")
+    for ref in re.findall(r'(?:href|src)="([^"]+)"', text):
+        if ref.startswith(("http://", "https://", "#", "data:", "mailto:")):
+            continue
+        if not (ROOT / ref.rstrip("/")).exists():
+            fail(f"index.html: référence locale manquante: {ref}")
+    print("HTML OK index.html (racine)")
+
 print("Assets OK")

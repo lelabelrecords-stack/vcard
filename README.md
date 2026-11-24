@@ -47,6 +47,20 @@ Le bouton **« Ajouter aux contacts — .vcf »** de chaque page HTML génère c
 2. `python3 cartes/build.py` → régénère `.vcf` (avec `PHOTO`), `.svg`, `.html`.
 3. Re-rendre les PNG (2×) depuis les SVG avec n'importe quel rasteriseur SVG (rsvg-convert, Inkscape, sharp…).
 
+## Hébergement sur Cloudflare Pages
+
+Le dépôt est 100 % statique (aucun build) et prêt à être servi tel quel par **Cloudflare Pages** :
+
+- `wrangler.jsonc` : `pages_build_output_dir: "."` — le dépôt est servi à la racine, `index.html` redirige vers `cartes/`.
+
+Configuration (dashboard Cloudflare, après merge de la PR #1 sur `main`) :
+
+1. Workers & Pages → Create application → Pages → Connect to Git → dépôt `lelabelrecords-stack/vcard`, branche `main`.
+2. Build settings : **Build command** vide, **Build output directory** = `.`
+3. Premier déploiement → URL `https://<projet>.pages.dev` ; domaine perso optionnel (ex. `vcard.le-label.org`) via Custom domains.
+
+Alternative : servir les cartes sous `https://le-label.org/vcard/` via le projet Pages existant du dépôt `website`.
+
 ## CI
 
 `.github/workflows/validate-vcard.yml` valide à chaque PR et push sur `main` :
