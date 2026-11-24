@@ -17,5 +17,11 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.x"
-      - name: Valider le fichier .vcf (RFC 6350)
-        run: python3 .github/scripts/validate_vcard.py le-label-records.vcf
+      - name: Valider les vCards .vcf (RFC 6350)
+        run: |
+          for f in le-label-records.vcf cartes/*.vcf; do
+            echo "== $f"
+            python3 .github/scripts/validate_vcard.py "$f"
+          done
+      - name: Valider les assets des cartes (SVG, PNG, HTML)
+        run: python3 .github/scripts/validate_assets.py

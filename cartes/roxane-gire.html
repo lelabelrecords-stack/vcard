@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#db0000" />
+    <title>Roxane Gire — Le Label Records</title>
+    <meta name="description" content="Carte de visite digitale de Roxane Gire, Co-fondatrice du Le Label Records (Nîmes). Bouton pour importer la vCard (.vcf) dans les contacts." />
+    <style>
+      @font-face { font-family: 'Archivo'; src: url('fonts/archivo-latin-400-normal.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+      @font-face { font-family: 'Archivo'; src: url('fonts/archivo-latin-500-normal.woff2') format('woff2'); font-weight: 500; font-style: normal; font-display: swap; }
+      @font-face { font-family: 'Archivo'; src: url('fonts/archivo-latin-700-normal.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+      @font-face { font-family: 'Archivo Black'; src: url('fonts/archivo-black-latin-400-normal.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+      :root { --red: #db0000; --white: #ffffff; }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: var(--white); color: var(--red); font-family: 'Archivo', 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 1.5; display: flex; justify-content: center; padding: 24px 16px; }
+      .card { width: 100%; max-width: 480px; border: 2px solid var(--red); padding: 24px; }
+      .card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+      .card-head img { width: 56px; height: auto; display: block; }
+      .card-head .brand { text-align: right; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.18em; text-transform: uppercase; line-height: 1.6; }
+      hr { border: 0; border-top: 2px solid var(--red); margin: 20px 0; }
+      .photo { position: relative; width: 100%; aspect-ratio: 1 / 1; border: 2px solid var(--red); overflow: hidden; margin: 0 0 20px; }
+      .photo img { width: 100%; height: 100%; object-fit: cover; display: block; position: relative; z-index: 1; }
+      .photo .mono { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: 'Archivo Black', 'Archivo', sans-serif; font-size: 6rem; }
+      h1 { font-family: 'Archivo Black', 'Archivo', sans-serif; font-weight: 400; font-size: 2.4rem; line-height: 1.1; text-transform: uppercase; margin: 0 0 6px; letter-spacing: 0.02em; }
+      .role { font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; font-size: 0.85rem; margin: 0 0 4px; }
+      .tagline { font-weight: 500; margin: 0; }
+      ul.contacts { list-style: none; padding: 0; margin: 0; font-size: 1.02rem; font-weight: 500; }
+      ul.contacts li { padding: 10px 0; border-top: 1px solid var(--red); overflow-wrap: anywhere; }
+      ul.contacts li:last-child { border-bottom: 1px solid var(--red); }
+      ul.contacts a { color: inherit; text-decoration: none; }
+      ul.contacts a:hover { text-decoration: underline; }
+      .button { display: inline-flex; align-items: center; justify-content: center; width: 100%; height: 50px; padding: 0 25px; border: 1px solid var(--red); border-radius: 0; background: var(--red); color: var(--white); font: inherit; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; text-decoration: none; margin-top: 20px; }
+      .button:hover { text-decoration: underline; }
+      .button--ghost { background: var(--white); color: var(--red); margin-top: 10px; }
+      .card-foot { display: flex; justify-content: space-between; gap: 12px; margin-top: 18px; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.06em; }
+      .card-foot a { color: inherit; }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <div class="card-head">
+        <img src="assets/logo-contour-rouge.svg" alt="Logo contour Le Label Records" />
+        <p class="brand">Le Label Records<br />Label indépendant — Nîmes</p>
+      </div>
+      <hr />
+      <div class="photo">
+        <div class="mono" id="mono">RG</div>
+        <img id="photo" src="roxane-gire.jpg" alt="Photo de Roxane Gire" onload="this.dataset.ok='1';document.getElementById('mono').style.display='none'" onerror="this.remove()" />
+      </div>
+      <h1>Roxane<br />Gire</h1>
+      <p class="role">Co-fondatrice · Le Label Records</p>
+      <p class="tagline">Un label indépendant, une heure, les morceaux qui le définissent — Le Label² à la radio.</p>
+      <hr />
+      <ul class="contacts">
+        <li><a href="mailto:lelabel@le-label.org">lelabel@le-label.org</a></li>
+        <li><a href="https://le-label.org">le-label.org</a> — <a href="https://linktr.ee/le.label">linktr.ee/le.label</a></li>
+        <li>8 rue Nationale, 30000 Nîmes</li>
+      </ul>
+      <button class="button" id="add" type="button">Ajouter aux contacts — .vcf</button>
+      <a class="button button--ghost" href="roxane-gire.vcf" download="roxane-gire.vcf">Télécharger la vCard (.vcf)</a>
+      <div class="card-foot">
+        <a href="https://github.com/lelabelrecords-stack/vcard">github.com/lelabelrecords-stack/vcard</a>
+        <a href="index.html">Les deux cartes</a>
+      </div>
+    </main>
+    <script>
+      const SLUG = "roxane-gire";
+      const LINES = [
+        "BEGIN:VCARD",
+        "VERSION:4.0",
+        "UID:urn:uuid:10f6ac36-54d5-427e-a705-ebe10fdd3d8d",
+        "FN:Roxane Gire",
+        "N:Gire;Roxane;;;",
+        "ORG:Le Label Records",
+        "TITLE:Co-fondatrice",
+        "EMAIL;TYPE=work:lelabel@le-label.org",
+        "ADR;TYPE=work:;;8 rue Nationale;Nîmes;;30000;France",
+        "URL:https://le-label.org",
+        "URL:https://github.com/lelabelrecords-stack/vcard",
+        "SOCIALPROFILE;TYPE=linktree:https://linktr.ee/le.label",
+        "SOCIALPROFILE;TYPE=bandcamp:https://lelabelrecords.bandcamp.com/",
+        "NOTE:Le Label Records — label indépendant à Nîmes, co-dirigé par Christophe Bonnici et Roxane Gire. Émission radio Le Label². 100 % des royalties nettes de distribution vont aux groupes.",
+        "REV:2026-11-24T14:12:12Z"
+      ];
+
+      function fold(line) {
+        const bytes = new TextEncoder().encode(line);
+        if (bytes.length <= 75) return [line];
+        const out = [];
+        let start = 0, first = true;
+        while (start < bytes.length) {
+          const limit = first ? 75 : 74;
+          let end = Math.min(start + limit, bytes.length);
+          while (end < bytes.length && end > start && (bytes[end] & 0xC0) === 0x80) end--;
+          const chunk = new TextDecoder().decode(bytes.subarray(start, end));
+          out.push(first ? chunk : " " + chunk);
+          first = false;
+          start = end;
+        }
+        return out;
+      }
+
+      async function photoUri() {
+        const img = document.getElementById("photo");
+        if (!img || !img.dataset.ok) return null;
+        try {
+          const res = await fetch(img.getAttribute("src"));
+          if (!res.ok) return null;
+          const buf = new Uint8Array(await res.arrayBuffer());
+          let bin = "";
+          for (let i = 0; i < buf.length; i += 8192) bin += String.fromCharCode.apply(null, buf.subarray(i, i + 8192));
+          const mime = img.getAttribute("src").endsWith(".png") ? "image/png" : "image/jpeg";
+          return "data:" + mime + ";base64," + btoa(bin);
+        } catch (e) {
+          return null;
+        }
+      }
+
+      document.getElementById("add").addEventListener("click", async () => {
+        const lines = LINES.slice();
+        const uri = await photoUri();
+        if (uri) {
+          lines.push("PHOTO;TYPE=" + (uri.includes("image/png") ? "PNG" : "JPEG") + ";ENCODING=b:" + uri);
+        }
+        lines.push("END:VCARD");
+        const folded = [];
+        for (const ln of lines) folded.push(...fold(ln));
+        const blob = new Blob([folded.join("\r\n") + "\r\n"], { type: "text/vcard;charset=utf-8" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = SLUG + ".vcf";
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+        a.remove();
+      });
+    </script>
+  </body>
+</html>
