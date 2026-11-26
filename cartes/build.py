@@ -243,7 +243,7 @@ HTML_TEMPLATE = """<!doctype html>
       <a class="button button--ghost" href="__SLUG__.vcf" download="__SLUG__.vcf">Télécharger la vCard (.vcf)</a>
       <div class="card-foot">
         <a href="https://github.com/lelabelrecords-stack/vcard">github.com/lelabelrecords-stack/vcard</a>
-        <a href="index.html">Les deux cartes</a>
+        <a href="./">Les deux cartes</a>
       </div>
     </main>
     <script>
