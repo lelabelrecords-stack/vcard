@@ -37,7 +37,7 @@ for h in sorted(CARTES.glob("*.html")):
     if 'id="add"' in text and "BEGIN:VCARD" not in text:
         fail(f"{h.name}: bouton vCard présent mais aucun générateur (BEGIN:VCARD)")
     for ref in re.findall(r'(?:href|src)="([^"]+)"', text):
-        if ref.startswith(("http://", "https://", "#", "data:", "mailto:")):
+        if ref.startswith(("http://", "https://", "#", "data:", "mailto:", "tel:")):
             continue
         if ref.lower().endswith((".jpg", ".jpeg")):
             continue
@@ -49,7 +49,7 @@ root_html = ROOT / "index.html"
 if root_html.exists():
     text = root_html.read_text(encoding="utf-8")
     for ref in re.findall(r'(?:href|src)="([^"]+)"', text):
-        if ref.startswith(("http://", "https://", "#", "data:", "mailto:")):
+        if ref.startswith(("http://", "https://", "#", "data:", "mailto:", "tel:")):
             continue
         if not (ROOT / ref.rstrip("/")).exists():
             fail(f"index.html: référence locale manquante: {ref}")

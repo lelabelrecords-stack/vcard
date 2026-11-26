@@ -51,18 +51,19 @@
       </div>
       <h1>Roxane<br />Gire</h1>
       <p class="role">Co-fondatrice · Le Label Records</p>
-      <p class="tagline">Un label indépendant, une heure, les morceaux qui le définissent — Le Label² à la radio.</p>
+      <p class="tagline">ᖇᗴᑕᗝᖇᗪᔕ ᒪᗩᗷᗴᒪ Ꭵᑎ ᑎîᗰᗴᔕ « ᒪᗩ ᗰᑌᔕᎥɊᑌᗴ ᑎ’ᗴᔕ丅 ᑭᗩᔕ ᔕᎥᗠᑭᒪᗰᗴᑎ丅 ᑌᑎᗴ ᕼᎥᔕ丅ᗝᎥᖇᗴ ᗪᗴ ᔕᗝᑎᔕ, ᑕ’ᗴᔕ丅 ᗩᐯᗩᑎ丅 丅ᗝᑌ丅 ᑌᑎᗴ ᗩᐯᗴᑎᗝᑌᖇᗴ ᑭᖇᗝᖴᗝᑎᗠéᗰᗴᑎ丅 ᕼᑌᗠᗩᎥᑎᗴ »</p>
       <hr />
       <ul class="contacts">
         <li><a href="mailto:lelabel@le-label.org">lelabel@le-label.org</a></li>
+        <li><a href="tel:+33699044701">06 99 04 47 01</a></li>
         <li><a href="https://le-label.org">le-label.org</a> — <a href="https://linktr.ee/le.label">linktr.ee/le.label</a></li>
         <li>8 rue Nationale, 30000 Nîmes</li>
+        <li>Le Label² à la radio : <a href="https://www.rayvox.org/podcastFilter?e=70&t=&l=1">Rayvox</a> (un lundi par mois, 20h, en direct) · <a href="https://raje.fr/programmes/le-label2">Raje Radio</a> (mar. 20h · 102.5 / 90.3 FM) · <a href="https://radioallianceplus.fr/show/le-label-au-carre/">Radio Alliance+</a> (jeu. 19h · 103.2 FM + DAB+)</li>
       </ul>
       <button class="button" id="add" type="button">Ajouter aux contacts — .vcf</button>
       <a class="button button--ghost" href="roxane-gire.vcf" download="roxane-gire.vcf">Télécharger la vCard (.vcf)</a>
       <div class="card-foot">
-        <a href="https://github.com/lelabelrecords-stack/vcard">github.com/lelabelrecords-stack/vcard</a>
-        <a href="index.html">Les deux cartes</a>
+        <a href="https://le-label.org">le-label.org</a>
       </div>
     </main>
     <script>
@@ -76,13 +77,12 @@
         "ORG:Le Label Records",
         "TITLE:Co-fondatrice",
         "EMAIL;TYPE=work:lelabel@le-label.org",
+        "TEL;TYPE=CELL,VOICE:+33699044701",
         "ADR;TYPE=work:;;8 rue Nationale;Nîmes;;30000;France",
         "URL:https://le-label.org",
-        "URL:https://github.com/lelabelrecords-stack/vcard",
         "SOCIALPROFILE;TYPE=linktree:https://linktr.ee/le.label",
         "SOCIALPROFILE;TYPE=bandcamp:https://lelabelrecords.bandcamp.com/",
-        "NOTE:Le Label Records — label indépendant à Nîmes, co-dirigé par Christophe Bonnici et Roxane Gire. Émission radio Le Label². 100 % des royalties nettes de distribution vont aux groupes.",
-        "REV:2026-11-24T14:30:18Z"
+        "NOTE:ᖇᗴᑕᗝᖇᗪᔕ ᒪᗩᗷᗴᒪ Ꭵᑎ ᑎîᗰᗴᔕ « ᒪᗩ ᗰᑌᔕᎥɊᑌᗴ ᑎ’ᗴᔕ丅 ᑭᗩᔕ ᔕᎥᗠᑭᒪᗰᗴᑎ丅 ᑌᑎᗴ ᕼᎥᔕ丅ᗝᎥᖇᗴ ᗪᗴ ᔕᗝᑎᔕ\, ᑕ’ᗴᔕ丅 ᗩᐯᗩᑎ丅 丅ᗝᑌ丅 ᑌᑎᗴ ᗩᐯᗴᑎᗝᑌᖇᗴ ᑭᖇᗝᖴᗝᑎᗠéᗰᗴᑎ丅 ᕼᑌᗠᗩᎥᑎᗴ » Le Label² à la radio : Rayvox (un lundi par mois\, 20h\, en direct) · Raje Radio (mar. 20h · 102.5 FM Nîmes / 90.3 FM Avignon) · Radio Alliance+ (jeu. 19h · 103.2 FM Nîmes + DAB+)"
       ];
 
       function fold(line) {
@@ -102,7 +102,7 @@
         return out;
       }
 
-      async function photoUri() {
+      async function photoData() {
         const img = document.getElementById("photo");
         if (!img || !img.dataset.ok) return null;
         try {
@@ -111,8 +111,8 @@
           const buf = new Uint8Array(await res.arrayBuffer());
           let bin = "";
           for (let i = 0; i < buf.length; i += 8192) bin += String.fromCharCode.apply(null, buf.subarray(i, i + 8192));
-          const mime = img.getAttribute("src").endsWith(".png") ? "image/png" : "image/jpeg";
-          return "data:" + mime + ";base64," + btoa(bin);
+          const type = img.getAttribute("src").endsWith(".png") ? "PNG" : "JPEG";
+          return { type: type, b64: btoa(bin) };
         } catch (e) {
           return null;
         }
@@ -120,10 +120,11 @@
 
       document.getElementById("add").addEventListener("click", async () => {
         const lines = LINES.slice();
-        const uri = await photoUri();
-        if (uri) {
-          lines.push("PHOTO;TYPE=" + (uri.includes("image/png") ? "PNG" : "JPEG") + ";ENCODING=b:" + uri);
+        const ph = await photoData();
+        if (ph) {
+          lines.push("PHOTO;TYPE=" + ph.type + ";ENCODING=b:" + ph.b64);
         }
+        lines.push("REV:2026-11-26T17:38:37Z");
         lines.push("END:VCARD");
         const folded = [];
         for (const ln of lines) folded.push(...fold(ln));

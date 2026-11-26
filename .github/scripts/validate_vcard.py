@@ -52,6 +52,19 @@ def main(path):
         if required not in props:
             fail(f"propriete obligatoire manquante: {required}")
 
+    if "PHOTO" in props:
+        import base64 as _b64
+
+        for l in unfolded:
+            if l.startswith("PHOTO"):
+                payload = l.split(":", 1)[1]
+                try:
+                    raw = _b64.b64decode(payload, validate=True)
+                except Exception:
+                    fail("PHOTO: base64 invalide")
+                if not (raw.startswith(b"\xff\xd8") or raw.startswith(b"\x89PNG")):
+                    fail("PHOTO: le contenu decode n'est ni JPEG ni PNG")
+
     print(f"vCard OK: FN={props['FN'][0]} VERSION={props['VERSION'][0]} ({len(unfolded)} proprietes)")
 
 

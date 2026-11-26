@@ -28,6 +28,8 @@ PEOPLE = [
         "title": "Co-fondateur",
         "initials": "CB",
         "uid": "urn:uuid:399993ac-3b79-4282-955d-543d02efde93",
+        "tel_display": "06 20 50 14 07",
+        "tel_e164": "+33620501407",
     },
     {
         "slug": "roxane-gire",
@@ -38,23 +40,44 @@ PEOPLE = [
         "title": "Co-fondatrice",
         "initials": "RG",
         "uid": "urn:uuid:10f6ac36-54d5-427e-a705-ebe10fdd3d8d",
+        "tel_display": "06 99 04 47 01",
+        "tel_e164": "+33699044701",
     },
+]
+
+VERBATIM = 'ᖇᗴᑕᗝᖇᗪᔕ ᒪᗩᗷᗴᒪ Ꭵᑎ ᑎîᗰᗴᔕ « ᒪᗩ ᗰᑌᔕᎥɊᑌᗴ ᑎ’ᗴᔕ丅 ᑭᗩᔕ ᔕᎥᗠᑭᒪᗰᗴᑎ丅 ᑌᑎᗴ ᕼᎥᔕ丅ᗝᎥᖇᗴ ᗪᗴ ᔕᗝᑎᔕ, ᑕ’ᗴᔕ丅 ᗩᐯᗩᑎ丅 丅ᗝᑌ丅 ᑌᑎᗴ ᗩᐯᗴᑎᗝᑌᖇᗴ ᑭᖇᗝᖴᗝᑎᗠéᗰᗴᑎ丅 ᕼᑌᗠᗩᎥᑎᗴ »'
+
+RADIO = (
+    "Le Label\u00b2 \u00e0 la radio : Rayvox (un lundi par mois, 20h, en direct) \u00b7 "
+    "Raje Radio (mar. 20h \u00b7 102.5 FM N\u00eemes / 90.3 FM Avignon) \u00b7 "
+    "Radio Alliance+ (jeu. 19h \u00b7 103.2 FM N\u00eemes + DAB+)"
+)
+RADIO_LINKS = [
+    ("Rayvox", "https://www.rayvox.org/podcastFilter?e=70&t=&l=1"),
+    ("Raje Radio", "https://raje.fr/programmes/le-label2"),
+    ("Radio Alliance+", "https://radioallianceplus.fr/show/le-label-au-carre/"),
 ]
 
 COMMON = {
     "org": "Le Label Records",
     "email": "lelabel@le-label.org",
-    "adr": ";;8 rue Nationale;Nîmes;;30000;France",
+    "adr": ";;8 rue Nationale;N\u00eemes;;30000;France",
     "url_site": "https://le-label.org",
-    "url_repo": "https://github.com/lelabelrecords-stack/vcard",
     "linktree": "https://linktr.ee/le.label",
     "bandcamp": "https://lelabelrecords.bandcamp.com/",
-    "note": (
-        "Le Label Records — label indépendant à Nîmes, co-dirigé par Christophe "
-        "Bonnici et Roxane Gire. Émission radio Le Label². 100 % des royalties "
-        "nettes de distribution vont aux groupes."
-    ),
+    "note": VERBATIM + " " + RADIO,
 }
+
+
+def esc(value: str) -> str:
+    return (
+        value.replace("\\", "\\\\")
+        .replace(";", "\\;")
+        .replace(",", "\\,")
+        .replace("\r\n", "\\n")
+        .replace("\n", "\\n")
+    )
+
 
 
 def fold(line: str) -> list:
@@ -84,16 +107,17 @@ def vcf_lines(p: dict, photo_uri: str | None) -> list:
         f"ORG:{COMMON['org']}",
         f"TITLE:{p['title']}",
         f"EMAIL;TYPE=work:{COMMON['email']}",
+        f"TEL;TYPE=CELL,VOICE:{p['tel_e164']}",
         f"ADR;TYPE=work:{COMMON['adr']}",
         f"URL:{COMMON['url_site']}",
-        f"URL:{COMMON['url_repo']}",
         f"SOCIALPROFILE;TYPE=linktree:{COMMON['linktree']}",
         f"SOCIALPROFILE;TYPE=bandcamp:{COMMON['bandcamp']}",
-        f"NOTE:{COMMON['note']}",
+        f"NOTE:{esc(COMMON['note'])}",
     ]
     if photo_uri:
-        mime = "image/png" if photo_uri.startswith("data:image/png") else "image/jpeg"
-        lines.append(f"PHOTO;TYPE={mime.split('/')[1].upper()};ENCODING=b:{photo_uri}")
+        mime = "png" if photo_uri.startswith("data:image/png") else "jpeg"
+        b64 = photo_uri.split("base64,", 1)[1]
+        lines.append(f"PHOTO;TYPE={mime.upper()};ENCODING=b:{b64}")
     lines += [f"REV:{REV}", "END:VCARD"]
     return lines
 
@@ -131,22 +155,44 @@ SVG_TEMPLATE = """<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1
   <line x1="72" y1="220" x2="1008" y2="220" stroke="__RED__" stroke-width="2"/>
   <rect x="72" y="264" width="360" height="360" fill="__WHITE__" stroke="__RED__" stroke-width="3"/>
 __PHOTO__
-  <text x="480" y="330" font-family="Archivo, Helvetica, Arial, sans-serif" font-weight="500" font-size="30" fill="__RED__">Un label indépendant,</text>
-  <text x="480" y="378" font-family="Archivo, Helvetica, Arial, sans-serif" font-weight="500" font-size="30" fill="__RED__">une heure, les morceaux</text>
-  <text x="480" y="426" font-family="Archivo, Helvetica, Arial, sans-serif" font-weight="500" font-size="30" fill="__RED__">qui le définissent.</text>
+__TAGLINE__
   <text x="480" y="500" font-family="Archivo, Helvetica, Arial, sans-serif" font-weight="700" font-size="24" letter-spacing="3" fill="__RED__">LE LABEL² — À LA RADIO</text>
+  <text x="480" y="542" font-family="Archivo, Helvetica, Arial, sans-serif" font-weight="500" font-size="21" fill="__RED__">Rayvox — un lundi par mois, 20h, en direct</text>
+  <text x="480" y="578" font-family="Archivo, Helvetica, Arial, sans-serif" font-weight="500" font-size="21" fill="__RED__">Raje Radio — mar. 20h · 102.5 / 90.3 FM</text>
+  <text x="480" y="614" font-family="Archivo, Helvetica, Arial, sans-serif" font-weight="500" font-size="21" fill="__RED__">Radio Alliance+ — jeu. 19h · 103.2 FM + DAB+</text>
   <text x="72" y="762" font-family="Archivo Black, Archivo, Helvetica, Arial, sans-serif" font-size="96" letter-spacing="2" fill="__RED__">__FIRST__</text>
   <text x="72" y="870" font-family="Archivo Black, Archivo, Helvetica, Arial, sans-serif" font-size="96" letter-spacing="2" fill="__RED__">__LAST__</text>
   <text x="72" y="936" font-family="Archivo, Helvetica, Arial, sans-serif" font-weight="700" font-size="34" letter-spacing="3" fill="__RED__">__TITLE_UP__ · LE LABEL RECORDS</text>
   <line x1="72" y1="984" x2="1008" y2="984" stroke="__RED__" stroke-width="2"/>
-  <text x="72" y="1044" font-family="Archivo, Helvetica, Arial, sans-serif" font-weight="500" font-size="32" fill="__RED__">lelabel@le-label.org</text>
-  <text x="72" y="1096" font-family="Archivo, Helvetica, Arial, sans-serif" font-weight="500" font-size="32" fill="__RED__">le-label.org — linktr.ee/le.label</text>
-  <text x="72" y="1148" font-family="Archivo, Helvetica, Arial, sans-serif" font-weight="500" font-size="32" fill="__RED__">8 rue Nationale, 30000 Nîmes</text>
-  <rect x="72" y="1192" width="936" height="96" fill="__RED__"/>
-  <text x="540" y="1252" text-anchor="middle" font-family="Archivo Black, Archivo, Helvetica, Arial, sans-serif" font-size="34" letter-spacing="3" fill="__WHITE__">AJOUTER AUX CONTACTS — .VCF</text>
-  <text x="540" y="1308" text-anchor="middle" font-family="Archivo, Helvetica, Arial, sans-serif" font-weight="500" font-size="22" letter-spacing="2" fill="__RED__">github.com/lelabelrecords-stack/vcard</text>
+  <text x="72" y="1036" font-family="Archivo, Helvetica, Arial, sans-serif" font-weight="500" font-size="32" fill="__RED__">lelabel@le-label.org</text>
+  <text x="72" y="1082" font-family="Archivo, Helvetica, Arial, sans-serif" font-weight="500" font-size="32" fill="__RED__">__TEL_DISPLAY__</text>
+  <text x="72" y="1128" font-family="Archivo, Helvetica, Arial, sans-serif" font-weight="500" font-size="32" fill="__RED__">le-label.org — linktr.ee/le.label</text>
+  <text x="72" y="1174" font-family="Archivo, Helvetica, Arial, sans-serif" font-weight="500" font-size="32" fill="__RED__">8 rue Nationale, 30000 Nîmes</text>
+  <rect x="72" y="1196" width="936" height="96" fill="__RED__"/>
+  <text x="540" y="1256" text-anchor="middle" font-family="Archivo Black, Archivo, Helvetica, Arial, sans-serif" font-size="34" letter-spacing="3" fill="__WHITE__">AJOUTER AUX CONTACTS — .VCF</text>
+  <text x="540" y="1312" text-anchor="middle" font-family="Archivo, Helvetica, Arial, sans-serif" font-weight="500" font-size="22" letter-spacing="2" fill="__RED__">le-label.org</text>
 </svg>
 """
+
+
+VERBATIM_LATIN = (
+    "RECORDS LABEL IN N\u00ceMES \u00ab LA MUSIQUE N\u2019EST PAS SIMPLEMENT UNE "
+    "HISTOIRE DE SENS, C\u2019EST AVANT TOUT UNE AVENTURE HUMAINE \u00bb"
+)
+
+
+def tagline_svg() -> str:
+    import textwrap as _tw
+
+    lines = _tw.wrap(VERBATIM_LATIN, width=38)
+    out = []
+    for i, ln in enumerate(lines[:4]):
+        y = 332 + i * 38
+        out.append(
+            f'  <text x="480" y="{y}" font-family="Archivo, Helvetica, Arial, sans-serif" '
+            f'font-weight="500" font-size="24" fill="{RED}">{ln}</text>'
+        )
+    return "\n".join(out)
 
 
 def write_svg(p: dict) -> None:
@@ -173,6 +219,8 @@ def write_svg(p: dict) -> None:
         .replace("__FIRST__", p["first"].upper())
         .replace("__LAST__", p["last"].upper())
         .replace("__TITLE_UP__", p["title"].upper())
+        .replace("__TEL_DISPLAY__", p["tel_display"])
+        .replace("__TAGLINE__", tagline_svg())
     )
     out = CARTES / f"{p['slug']}.svg"
     out.write_text(svg, encoding="utf-8")
@@ -232,18 +280,19 @@ HTML_TEMPLATE = """<!doctype html>
       </div>
       <h1>__FIRST__<br />__LAST__</h1>
       <p class="role">__TITLE__ · Le Label Records</p>
-      <p class="tagline">Un label indépendant, une heure, les morceaux qui le définissent — Le Label² à la radio.</p>
+      <p class="tagline">__VERBATIM__</p>
       <hr />
       <ul class="contacts">
         <li><a href="mailto:lelabel@le-label.org">lelabel@le-label.org</a></li>
+        <li><a href="tel:__TEL_E164__">__TEL_DISPLAY__</a></li>
         <li><a href="https://le-label.org">le-label.org</a> — <a href="https://linktr.ee/le.label">linktr.ee/le.label</a></li>
         <li>8 rue Nationale, 30000 Nîmes</li>
+        <li>__RADIO_HTML__</li>
       </ul>
       <button class="button" id="add" type="button">Ajouter aux contacts — .vcf</button>
       <a class="button button--ghost" href="__SLUG__.vcf" download="__SLUG__.vcf">Télécharger la vCard (.vcf)</a>
       <div class="card-foot">
-        <a href="https://github.com/lelabelrecords-stack/vcard">github.com/lelabelrecords-stack/vcard</a>
-        <a href="index.html">Les deux cartes</a>
+        <a href="https://le-label.org">le-label.org</a>
       </div>
     </main>
     <script>
@@ -257,13 +306,12 @@ HTML_TEMPLATE = """<!doctype html>
         "ORG:Le Label Records",
         "TITLE:__TITLE__",
         "EMAIL;TYPE=work:lelabel@le-label.org",
+        "TEL;TYPE=CELL,VOICE:__TEL_E164__",
         "ADR;TYPE=work:;;8 rue Nationale;Nîmes;;30000;France",
         "URL:https://le-label.org",
-        "URL:https://github.com/lelabelrecords-stack/vcard",
         "SOCIALPROFILE;TYPE=linktree:https://linktr.ee/le.label",
         "SOCIALPROFILE;TYPE=bandcamp:https://lelabelrecords.bandcamp.com/",
-        "NOTE:Le Label Records — label indépendant à Nîmes, co-dirigé par Christophe Bonnici et Roxane Gire. Émission radio Le Label². 100 % des royalties nettes de distribution vont aux groupes.",
-        "REV:__REV__"
+        "NOTE:__NOTE_ESC__"
       ];
 
       function fold(line) {
@@ -283,7 +331,7 @@ HTML_TEMPLATE = """<!doctype html>
         return out;
       }
 
-      async function photoUri() {
+      async function photoData() {
         const img = document.getElementById("photo");
         if (!img || !img.dataset.ok) return null;
         try {
@@ -292,8 +340,8 @@ HTML_TEMPLATE = """<!doctype html>
           const buf = new Uint8Array(await res.arrayBuffer());
           let bin = "";
           for (let i = 0; i < buf.length; i += 8192) bin += String.fromCharCode.apply(null, buf.subarray(i, i + 8192));
-          const mime = img.getAttribute("src").endsWith(".png") ? "image/png" : "image/jpeg";
-          return "data:" + mime + ";base64," + btoa(bin);
+          const type = img.getAttribute("src").endsWith(".png") ? "PNG" : "JPEG";
+          return { type: type, b64: btoa(bin) };
         } catch (e) {
           return null;
         }
@@ -301,10 +349,11 @@ HTML_TEMPLATE = """<!doctype html>
 
       document.getElementById("add").addEventListener("click", async () => {
         const lines = LINES.slice();
-        const uri = await photoUri();
-        if (uri) {
-          lines.push("PHOTO;TYPE=" + (uri.includes("image/png") ? "PNG" : "JPEG") + ";ENCODING=b:" + uri);
+        const ph = await photoData();
+        if (ph) {
+          lines.push("PHOTO;TYPE=" + ph.type + ";ENCODING=b:" + ph.b64);
         }
+        lines.push("REV:__REV__");
         lines.push("END:VCARD");
         const folded = [];
         for (const ln of lines) folded.push(...fold(ln));
@@ -323,6 +372,15 @@ HTML_TEMPLATE = """<!doctype html>
 """
 
 
+def radio_html() -> str:
+    parts = []
+    for label, url in RADIO_LINKS:
+        parts.append(f'<a href="{url}">{label}</a>')
+    slots = ["un lundi par mois, 20h, en direct", "mar. 20h \u00b7 102.5 / 90.3 FM", "jeu. 19h \u00b7 103.2 FM + DAB+"]
+    bits = [f"{a} ({d})" for a, d in zip(parts, slots)]
+    return "Le Label\u00b2 \u00e0 la radio : " + " \u00b7 ".join(bits)
+
+
 def write_html(p: dict) -> None:
     html = (
         HTML_TEMPLATE.replace("__SLUG__", p["slug"])
@@ -334,6 +392,11 @@ def write_html(p: dict) -> None:
         .replace("__UID__", p["uid"])
         .replace("__N__", p["n"])
         .replace("__REV__", REV)
+        .replace("__TEL_E164__", p["tel_e164"])
+        .replace("__TEL_DISPLAY__", p["tel_display"])
+        .replace("__VERBATIM__", VERBATIM)
+        .replace("__NOTE_ESC__", esc(COMMON["note"]))
+        .replace("__RADIO_HTML__", radio_html())
     )
     out = CARTES / f"{p['slug']}.html"
     out.write_text(html, encoding="utf-8")
