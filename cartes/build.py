@@ -169,8 +169,7 @@ __TAGLINE__
   <text x="72" y="1128" font-family="Archivo, Helvetica, Arial, sans-serif" font-weight="500" font-size="32" fill="__RED__">le-label.org — linktr.ee/le.label</text>
   <text x="72" y="1174" font-family="Archivo, Helvetica, Arial, sans-serif" font-weight="500" font-size="32" fill="__RED__">8 rue Nationale, 30000 Nîmes</text>
   <rect x="72" y="1196" width="936" height="96" fill="__RED__"/>
-  <text x="540" y="1256" text-anchor="middle" font-family="Archivo Black, Archivo, Helvetica, Arial, sans-serif" font-size="34" letter-spacing="3" fill="__WHITE__">AJOUTER AUX CONTACTS — .VCF</text>
-  <text x="540" y="1312" text-anchor="middle" font-family="Archivo, Helvetica, Arial, sans-serif" font-weight="500" font-size="22" letter-spacing="2" fill="__RED__">le-label.org</text>
+  <text x="540" y="1256" text-anchor="middle" font-family="Archivo Black, Archivo, Helvetica, Arial, sans-serif" font-size="34" letter-spacing="3" fill="__WHITE__">AJOUTER À MES CONTACTS</text>
 </svg>
 """
 
@@ -262,9 +261,6 @@ HTML_TEMPLATE = """<!doctype html>
       ul.contacts a:hover { text-decoration: underline; }
       .button { display: inline-flex; align-items: center; justify-content: center; width: 100%; height: 50px; padding: 0 25px; border: 1px solid var(--red); border-radius: 0; background: var(--red); color: var(--white); font: inherit; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; text-decoration: none; margin-top: 20px; }
       .button:hover { text-decoration: underline; }
-      .button--ghost { background: var(--white); color: var(--red); margin-top: 10px; }
-      .card-foot { display: flex; justify-content: space-between; gap: 12px; margin-top: 18px; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.06em; }
-      .card-foot a { color: inherit; }
     </style>
   </head>
   <body>
@@ -289,84 +285,8 @@ HTML_TEMPLATE = """<!doctype html>
         <li>8 rue Nationale, 30000 Nîmes</li>
         <li>__RADIO_HTML__</li>
       </ul>
-      <button class="button" id="add" type="button">Ajouter aux contacts — .vcf</button>
-      <a class="button button--ghost" href="__SLUG__.vcf" download="__SLUG__.vcf">Télécharger la vCard (.vcf)</a>
-      <div class="card-foot">
-        <a href="https://le-label.org">le-label.org</a>
-      </div>
+      <a class="button" href="__SLUG__.vcf" download="__SLUG__.vcf">Ajouter à mes contacts</a>
     </main>
-    <script>
-      const SLUG = "__SLUG__";
-      const LINES = [
-        "BEGIN:VCARD",
-        "VERSION:4.0",
-        "UID:__UID__",
-        "FN:__FN__",
-        "N:__N__",
-        "ORG:Le Label Records",
-        "TITLE:__TITLE__",
-        "EMAIL;TYPE=work:lelabel@le-label.org",
-        "TEL;TYPE=CELL,VOICE:__TEL_E164__",
-        "ADR;TYPE=work:;;8 rue Nationale;Nîmes;;30000;France",
-        "URL:https://le-label.org",
-        "SOCIALPROFILE;TYPE=linktree:https://linktr.ee/le.label",
-        "SOCIALPROFILE;TYPE=bandcamp:https://lelabelrecords.bandcamp.com/",
-        "NOTE:__NOTE_ESC__"
-      ];
-
-      function fold(line) {
-        const bytes = new TextEncoder().encode(line);
-        if (bytes.length <= 75) return [line];
-        const out = [];
-        let start = 0, first = true;
-        while (start < bytes.length) {
-          const limit = first ? 75 : 74;
-          let end = Math.min(start + limit, bytes.length);
-          while (end < bytes.length && end > start && (bytes[end] & 0xC0) === 0x80) end--;
-          const chunk = new TextDecoder().decode(bytes.subarray(start, end));
-          out.push(first ? chunk : " " + chunk);
-          first = false;
-          start = end;
-        }
-        return out;
-      }
-
-      async function photoData() {
-        const img = document.getElementById("photo");
-        if (!img || !img.dataset.ok) return null;
-        try {
-          const res = await fetch(img.getAttribute("src"));
-          if (!res.ok) return null;
-          const buf = new Uint8Array(await res.arrayBuffer());
-          let bin = "";
-          for (let i = 0; i < buf.length; i += 8192) bin += String.fromCharCode.apply(null, buf.subarray(i, i + 8192));
-          const type = img.getAttribute("src").endsWith(".png") ? "PNG" : "JPEG";
-          return { type: type, b64: btoa(bin) };
-        } catch (e) {
-          return null;
-        }
-      }
-
-      document.getElementById("add").addEventListener("click", async () => {
-        const lines = LINES.slice();
-        const ph = await photoData();
-        if (ph) {
-          lines.push("PHOTO;TYPE=" + ph.type + ";ENCODING=b:" + ph.b64);
-        }
-        lines.push("REV:__REV__");
-        lines.push("END:VCARD");
-        const folded = [];
-        for (const ln of lines) folded.push(...fold(ln));
-        const blob = new Blob([folded.join("\\r\\n") + "\\r\\n"], { type: "text/vcard;charset=utf-8" });
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = SLUG + ".vcf";
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(() => URL.revokeObjectURL(a.href), 5000);
-        a.remove();
-      });
-    </script>
   </body>
 </html>
 """
