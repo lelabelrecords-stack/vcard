@@ -45,7 +45,7 @@ PEOPLE = [
     },
 ]
 
-VERBATIM = 'ᖇᗴᑕᗝᖇᗪᔕ ᒪᗩᗷᗴᒪ Ꭵᑎ ᑎîᗰᗴᔕ « ᒪᗩ ᗰᑌᔕᎥɊᑌᗴ ᑎ’ᗴᔕ丅 ᑭᗩᔕ ᔕᎥᗠᑭᒪᗰᗴᑎ丅 ᑌᑎᗴ ᕼᎥᔕ丅ᗝᎥᖇᗴ ᗪᗴ ᔕᗝᑎᔕ, ᑕ’ᗴᔕ丅 ᗩᐯᗩᑎ丅 丅ᗝᑌ丅 ᑌᑎᗴ ᗩᐯᗴᑎᗝᑌᖇᗴ ᑭᖇᗝᖴᗝᑎᗠéᗰᗴᑎ丅 ᕼᑌᗠᗩᎥᑎᗴ »'
+VERBATIM = 'ᖇᗴᑕᗝᖇᗪᔕ ᒪᗩᗷᗴᒪ Ꭵᑎ ᑎîᗰᗴᔕ « ᒪᗩ ᗰᑌᔕᎥɊᑌᗴ ᑎ’ᗴᔕ丅 ᑭᗩᔕ ᔕᎥᗠᑭᒪᗴᗰᗴᑎ丅 ᑌᑎᗴ ᕼᎥᔕ丅ᗝᎥᖇᗴ ᗪᗴ ᔕᗝᑎᔕ, ᑕ’ᗴᔕ丅 ᗩᐯᗩᑎ丅 丅ᗝᑌ丅 ᑌᑎᗴ ᗩᐯᗴᑎ丅ᑌᖇᗴ ᑭᖇᗝᖴᗝᑎᗠéᗰᗴᑎ丅 ᕼᑌᗠᗩᎥᑎᗴ. »'
 
 RADIO = (
     "Le Label\u00b2 \u00e0 la radio : Rayvox (un lundi par mois, 20h, en direct) \u00b7 "
@@ -108,11 +108,11 @@ def vcf_lines(p: dict, photo_uri: str | None) -> list:
         f"TITLE:{p['title']}",
         f"EMAIL;TYPE=work:{COMMON['email']}",
         f"TEL;TYPE=CELL,VOICE:{p['tel_e164']}",
-        f"ADR;TYPE=work:{COMMON['adr']}",
+        f"ADR;CHARSET=UTF-8;TYPE=work:{COMMON['adr']}",
         f"URL:{COMMON['url_site']}",
         f"SOCIALPROFILE;TYPE=linktree:{COMMON['linktree']}",
         f"SOCIALPROFILE;TYPE=bandcamp:{COMMON['bandcamp']}",
-        f"NOTE:{esc(COMMON['note'])}",
+        f"NOTE;CHARSET=UTF-8:{esc(COMMON['note'])}",
     ]
     if photo_uri:
         mime = "png" if photo_uri.startswith("data:image/png") else "jpeg"
@@ -176,7 +176,7 @@ __TAGLINE__
 
 VERBATIM_LATIN = (
     "RECORDS LABEL IN N\u00ceMES \u00ab LA MUSIQUE N\u2019EST PAS SIMPLEMENT UNE "
-    "HISTOIRE DE SENS, C\u2019EST AVANT TOUT UNE AVENTURE HUMAINE \u00bb"
+    "HISTOIRE DE SENS, C\u2019EST AVANT TOUT UNE AVENTURE HUMAINE. \u00bb"
 )
 
 
