@@ -41,7 +41,7 @@ for h in sorted(CARTES.glob("*.html")):
             continue
         if ref.lower().endswith((".jpg", ".jpeg")):
             continue
-        if not (h.parent / ref).exists():
+        if not (h.parent / ref).exists() and not (h.parent / (ref + ".html")).exists():
             fail(f"{h.name}: référence locale manquante: {ref}")
     print(f"HTML OK {h.name}")
 
